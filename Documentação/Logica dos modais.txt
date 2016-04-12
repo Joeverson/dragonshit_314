@@ -1,0 +1,33 @@
+Como funciona o modal?
+
+para que um modal generico funcione primeiro ele precisa ter a classe ".fn" ela é responsavel para capturar
+algumas informações que seram setadas na tag html e assim chamar a page e coloca no modal.
+
+parametros para as tags:
+
+data-url = vai conter a url onde esta a pagina que vai ser jogada no modal.
+data-title = é o titulo que será apresentado quando o modal abrir.
+data-id = usado para passar id nos casos de edição ou deleção de algum registro(não é obrigatorio usa-lo)
+
+alem dos data tbm deve ser adicionado na tag html os seguintes parametros para a chamada do modal:
+
+data-toggle="modal"
+data-target="#modalUsers"
+
+Exemplo: (exemplo de botão de ação, btn que chama o modal)
+<a class="fn" data-title="Editando usuário..." data-id="2" data-url="models/admin/vereadores/pages/edit.php" data-toggle="modal" data-target="#modalUsers"></a>
+
+o modal depois de ser criado com a page especificado no data-url por padrão o conteudo é colocado em um form para
+poder fazer mais ações como criação, deleção, edição... de registros no db. para poder usar o form e que ele fun-
+cione corretamente é necessario que em qualquer tag do arquivo que foi carregado em page possua a classe .urlTrasiction ou
+.editForm para poder enviar os dados que estiverem em inputs na page carregada no modal. na tag onde foi inserido qualquer
+ uma dessas classes terá que ter o data-url informando qual controler vai receber o post com os dados do formulario.
+
+ ** não é necessario colocar btn de submit na page carregada no modal, pq o tamplate do modal já possue.
+ ** todas as funções responsaveis pelos carregamento generico do modal esta no models/widgets/rodape.php.
+
+
+
+
+
+ - Pre-requisitos: bootstrap, jquery.

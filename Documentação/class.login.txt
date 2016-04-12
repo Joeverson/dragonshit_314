@@ -1,0 +1,12 @@
+methods
+
+- singIn() : ele é chamado passando por parametro a senha que será verificada no banco de dados.
+
+    retorno:  se for encontrado ele retorna algumas informações que foram pedidas lá na classe de banco de
+              dados.. no caso esta retornando o nome do usuario e a senha dele, mais isso pode ser alterado.
+              se não existir o usuario é retornado false.
+
+    observações: preferencia usar ajax.. essa class foi pensada já para ser requisitada por ajax, é bem simples.
+            url: login
+            return: todo o retorno é em json entaõ no js tem que converter pois ele não vem json puro ¬¬.
+

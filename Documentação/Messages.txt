@@ -1,0 +1,45 @@
+:::::::::::::::::::::::::::                                                             :::::::::::::::::::::::::
+::::::::::::::::::::::::::: COMPORTAMENTO DE TROCA DE MENSAGEM ENTRE BACKAND E FRONTAND :::::::::::::::::::::::::
+:::::::::::::::::::::::::::                                                             :::::::::::::::::::::::::
+
+
+A baixo esta apresentago a forma de troca de mesnsagem do sistema e comportamento, com isso e feito a padroização de
+ troca de mensagem e notificações entre arquivos "php" e "ajax" de forma simples e mapeável
+
+
+:::: LOGICA :::::::
+o php gera um json que é enviado para o arquivo que solicitou requisição por ajax, e em seguida ele analisa e faz alguma
+ação acerca da mensagem envida.
+
+* devesse fazer uma API JS para poder assinar toda a configuração de analise de mensagens, para ão sujar o codigo em
+ varios pontos com analises, e com isso só fazer uma chamada passando o que vem retornando.
+
+------------------------------------------------------------------------------------------------------------------------------
+
+::: lado PHP :::
+print json_encode(array("type"=>"success" , "message" => "Parabens!! Agora você faz parte do Multiplicador Online"));
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+::: lado js no ajax ::: ("anmer.js" )
+
+var json = JSON.parse(e);
+switch(json.type){
+	case "error":
+	    notification.error(json.message);
+		break;
+	case "success":
+	    notification.ok(json.message);
+		setTimeout(function(){
+		    window.location.href = "<?=$site?>admin/dashboard";
+        },3000);
+		break;
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+::::: OBS ::::::::::::
+Para os formularios que usam os metodos genericos de envio de informações por ajax, usando "formEditUser" e "urlForm"
+deveram conter o seguinte atributo "data-msg" com isso ele vai conseguir enxergar as mensagens enviadas para ele.
+
+esses metodos estão em (/modules/includes/js/request.ajax.js)

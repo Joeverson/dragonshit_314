@@ -1,0 +1,2 @@
+
+--> checkdnsrr(HOST) //essa função é usada para verificar se existe umdeterminado host usando o dns e buscando.

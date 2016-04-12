@@ -1,0 +1,33 @@
+OBS::. no vivald ta dando pau na chamada não sei oque é... mas no mozila ta rodando de boa.
+
+
+como funciona?
+o fluxo é bem simples, primeiro vc chama o method SESSION::on() que vai habilitar o sistema para trabalhar com sessoes.
+
+Oque é essa classe?
+ela é só para abstrair o uso de sessoes, ou seja, frescura minha kkk
+
+
+  methods::
+
+        SESSION::on() = esse metodo é para inicializar as sessoes no servidor -- ele deve ser chamado depois da instanciação
+                        do control.php, pois o control que vai carregar a classe de sessions.
+
+        SESSION::intance = atributo privado, contem a instancia da classe.. usada mais para ter o controle de instanciações
+                            da classe, só é possivel isntanciar uma só vez.
+
+        SESSION::open = atributo privado, usado para o controle do fluxo de sessoes... não sei pq, mas se não usar essa
+                        variavel para fazer o controle dos metodos a sessoes ficam loucas ricam rodando sem ter sido instanciada.
+
+        SESSION::data() - return informações da sessao, vc informa o nome da sessaõ que vc quer recuperar e ele lhe entrega.
+
+        SESSION::setData(array) - return void = ele é usado para adicionar novos dados em sessoes, ele revebe um array onde sua
+                                                chave sera usada para chamar o valor posteriormente usando o SESSION::data();
+        SESSION::user([string]) - return a ou as informações do usuario, onde se for informado o campo sera retronado o valor
+                                   do campo, mas se não informar nada ele retornará todos os campos que o usuario possue.
+        SESSION::setUser(array) - ele recebe um array que sera guardado nas sessoes, normalmenteele é carregado na classe login
+                                  depois de ser efetuado a verificação.
+
+        SESSION::close() - ela deleta todas as sessoes que possuem no servidor
+
+

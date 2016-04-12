@@ -1,0 +1,13 @@
+Estrutura de pastas.
+
+- controller:
+        control.php : arquivo que possue as incerções das bibliotecas arquivo de organização geral
+        routes.php : arquivo resposnsavel pelas rotas de get e post enviados ao servidor usando a API Slim.
+
+- Documentação: arquivos de documentação de todo o projeto.
+
+- libs: onde as bibliotecas seram colocadas.
+
+- models: onde seram colocadas as pastas que seram chamadas , ou seja as pastas q seram direcionadas atravez das rotas.
+
+- Slim: kernel do micro framework.

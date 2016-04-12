@@ -1,0 +1,28 @@
+para fazer qualquer chamada de qualquer class, agora é mais simples e não necessita usar includes em todos os lugares,
+basta incluir o libs/autoload.inc e ele altomaticamente irá incluir todas as classes que forem instanciadas... e o modo
+de instancia tbm mudou, agora é por base de path ou seja para instanciar functions que para utilizar seus metodos basta
+chamar da seguinte forma
+
+new libs\functions;
+
+e assim o namespace irá traduzir o nome da classe para esse path e o autoload irá incluir a biblioteca chamada.
+
+para chamadas de informações modulares(chamadas internas entre os models e controllers) é feito da seguinte forma
+
+new modules\artigos\model\DBArtigo.
+
+
+
+::: mapeamento de classes :::
+
+para que o autoload funcione corretamente e que o codigo fique limpo, quando for criada uma nova classe em algum modulo, no
+inicio do arquivo deve conter um namespace referenciando onde ele esta exemplo --- modules\artigos\model ---- e em seguida vc pode fazer
+sua classe tranquilamente, mas lembrese que o nome da classe deve ser o mesmo nome do arquivo.
+
+.: caso a classe em uso extenda ou implemente alguma outra classe vc deve usar a clausula "use" e em seguina a chamada da classe que
+.: queira extender ou implementar por exemplo --- use model\DB --
+
+>> OBS: todos os arquivos de class que contenham os namespaces devem ser salvos na extensão ".inc"
+
+>> OBS 002: caso use alguma classe nativa do php como por exemplo o PDO devese usar o "\" na frente da chamada dele por exemplo
+>>          new \PDO(parametros);

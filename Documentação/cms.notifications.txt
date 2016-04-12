@@ -1,0 +1,10 @@
+a class notification do JS é resposnsavel pelas chamadas das notificações.
+
+fluxo: um template (trecho html) de notificação fica no models/widgets/sidebar.php, o notifications manipula esse
+trecho diretamente.
+
+notification.alert ( String mensagem ):: recebe a mensagem que vai ser apresentada ao usuario... a mensagem é fechada
+                                        apos 2seg.
+
+notification.error ( String mensagem )      ||                    ||                              ||
+notification.ok ( String mensagem )          ||                    ||                                 ||

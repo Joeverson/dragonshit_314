@@ -1,0 +1,10 @@
+===================================================
+Descrição dos metodos da clase de funções comuns:::
+===================================================
+
+METHODS::
+
+class FUNC:
+
+FUNC->BPath(recebe nome do method) - recebe o nome da pagina para o sistema linkar de forma corretamente.
+FUNC->set_path( recebe o path default ) - grava o caminho correto do path.

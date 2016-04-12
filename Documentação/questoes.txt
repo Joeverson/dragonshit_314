@@ -1,0 +1,5 @@
+- qual o melhor? carregar os dodas do usuario em um sessão ou ficar chamando do banco?
+
+
+- cuidado com a precendencia das chamadas gets e posts, pois isso faz toda a diferença... uma chamado pode esta sendo
+chamada antes de outra e dar problema na execução.

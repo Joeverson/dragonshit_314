@@ -1,0 +1,6 @@
+Neste arquivo possue as definições de sessions usadas pela sophia
+
+
+$_SESSION['auth'] - Recebe true or false, usado na autentucação de paginas caso esteja logado.
+
+$_SESSION['user'] - Recebe um array com os dados retornados do banco de dados. //pkw.db.php
