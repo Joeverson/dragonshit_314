@@ -1,248 +1,116 @@
 <?php
-/**
- * Definições basicas usadas em rotas:
- *  - pacote : area onde possue o admin ou site, é a raiz de uma parte importante do fluxo do sistema
- *  - pagina : tela index de modulo
- *  - modulo : conjunto de paginas fom funções especificas ou gerais para o funcionamento do sistema.
- *
- * */
-session_cache_limiter(false);
-session_start();
 
-/// inicialização e configuração do slim
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
+$config = [
+    'settings' => [
+        'displayErrorDetails' => true
+    ],
+    'view' => new Slim\Views\PhpRenderer("./modules")
+];
 
-$app = new \Slim\Slim(array('templates.path' => 'modules')); // retorna a instancia
-$app->config(array('debug'=>'true'));
-
-
-
-//--------------------------------------
-//update do sistema em desenvolvimento
- //\libs\autoUpdate::on();
-
-//--------------------------------------
-
-
-// instanciações de libs
-$signIn = new \libs\login;
-$user = new \libs\user;
-
-// dados que é enviado comummente para todos as paginas renderizadas
-$data = array("user" => $user);
-
+$app = new Slim\App($config);
 
 
 /**
-funções anonymas para as rotas:.
-**/
-$authentication = function(\Slim\Route $route) use ($data){
-    $app = \Slim\Slim::getInstance();
+ * ========================================================
+ *              authentication
+ * ========================================================
+ **/
 
-    //só inicializa a variavel caso ela esteja vazia
-    if(!isset($_SESSION['user']))
-        $_SESSION['user'] = null;
+$authentication = function ($request, $response, $next) {
 
+    if(\libs\kernel\Auth::isActive())
+        return $next($request, $response);
+    else
+        return $this->view->render($response, "/login/index.php");
 
-    if(\libs\kernel\Security::filterRoutes(false)){
-        if (!isset( $_SESSION["auth"]) || $_SESSION['auth'] == false){
-            $app->render("admin/login/index.php", $data);
-            exit;
-        }
-    }
 };
+/**
+ * ========================================================
+ *              end authentication
+ * ========================================================
+ **/
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        LOGIN                                                        //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+
+$app->get('/', function ($request, $response, $args) {
+    return $this->view->render($response, "/dashboard/index.php", $args);
+})->add($authentication);
 
 
-// methodos que resolvem o login
-$app->post('/login', function () use($signIn, $app, $data) {
-    if(!empty($_POST['pass']))
-        if($info = $signIn->singIn($_POST)){
-            if(($info['date_fin'] >= date("Y-m-d")) && ($info['ativo'] != 0)){
-                $_SESSION["user"] = $info; // guardando dados do usuario
-                $_SESSION["auth"] = true;
-                $app->render('admin/dashboard/index.php', $data);
-            }
-        }else
-            redirectInit($app, "Usuário ou Senha inválidos");
+/**
+ * rota nivel 1 chamando class e metodo do modulo
+ * onde por padrão ele chama o index caso não chame mais nada
+**/
+$app->get('/{class}', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
+    
+    call_user_func_array(array($class, "index"), array($this, $response, $args));
+
+})->add($authentication);
+
+
+/**
+ * rota nivel 2 chamando class e metodo do modulo
+ * onde por padrão ele chama o index caso não chame mais nada
+ **/
+$app->get('/{class}/{method}', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
+
+    call_user_func_array(array($class, $args['method']), array($this, $response, $args));
+
+})->add($authentication);
+
+
+/**
+ * rota nivel 3 chamando class e metodo do modulo
+ * onde por padrão ele chama o index caso não chame mais nada e o terceiro é ID passado
+ **/
+$app->get('/{class}/{method}/{id}', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
+
+    call_user_func_array(array($class, $args['method']), array($this, $response, $args));
+
+})->add($authentication);
+
+/**
+ * rota nivel 2 chamando class e metodo do modulo mandado por post
+ *
+ **/
+$app->post('/{class}/{method}', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
+
+    call_user_func_array(array($class, $args['method']), array($this, $response, $_POST));
 
 });
 
 
-//func criada só para diminuir repeticoes de codes
-function redirectInit($app, $error){
-    $data['error'] = $error;
-    $app->render('admin/login/index.php', $data);
-}
 
-$app->get('/logout', function () use($signIn, $app, $data) {
-    unset($_SESSION["user"]);
-    unset($_SESSION["auth"]);
-    session_destroy();
-    $app->render('admin/login/index.php', $data);
+/**
+ * ========================================================
+ *              Rotas para Json gerados
+ * ========================================================
+**/
 
+/**
+ * rota nivel 3 chamando class e metodo do modulo
+ * onde por padrão ele chama o json caso não chame mais nada
+ *
+ * esse modo de chamada é para trazar as infomações por json.. só retorna json
+ **/
+$app->get('/{class}/{id}/json', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
+
+    call_user_func_array(array($class, "json"), array($this, $response, $args));
 });
+/**
+ * rota nivel 2 chamando class e metodo do modulo
+ * onde por padrão ele chama o json caso não chame mais nada
+ *
+ * esse modo de chamada é para trazar as infomações por json.. só retorna json
+ **/
+$app->get('/{class}/json', function ($request, $response, $args) {
+    $class = '\modules\\'.$args['class'].'\controller\Controller'.ucfirst($args['class']);
 
-
-
-
-
-
-
-//                                     ROTAS GENERICAS
-//*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*//
-//------------------  Quatro bases de rotas principais dentro do fluxo   ---------------------------------//
-//*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*//
-
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        BASE                                                         //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-// rota inicial - direcionada para o site (preferencialmente);
-$app->get('/' , $authentication, function () use($app, $data) {
-    try{
-        $app->render('site/home/index.php', $data);
-    }catch (\Exception $e){
-        $app->render('404.html');
-    }
+    call_user_func_array(array($class, "json"), array($this, $response, $args));
 });
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        NIVEL 1                                                      //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-
-// segunda nivel de rota - ideal para navegar entre paginas ( rota voltada para o site )
-$app->get('/:page', $authentication, function ($page) use($app, $data) {
-    try{
-        if(\libs\kernel\Security::filterRoutes($page))//caso haja admin ele vai e manda para o manager
-            $app->render($page.'/dashboard/index.php', $data);
-        else
-            $app->render('site/'.$page.'/index.php', $data);
-    }catch(\Exception $e){
-        $app->render('404.html');
-    }
-})->conditions(array('page' => '[a-z]{2,}'));
-
-
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        NIVEL 2                                                      //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-
-// rota entre pacotes (site, admin... por exemplo) - recebe pacote e pagina.
-$app->get('/:page/:subpage', $authentication, function ($page, $subpage) use($app, $data) {
-    try{
-         $app->render($page.'/'.$subpage . '/index.php', $data);
-    }catch (\Exception $e){        
-        $app->render('404.html');
-    }
-})->conditions(array('page' => '[a-z]{2,}'));
-
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        NIVEL 3                                                      //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-
-
-// rota que leva a subModulos de um determinado pacote.
-$app->get('/:page/:subpage/:file', $authentication, function ($page, $subpage, $file) use($app, $data) {
-        try{
-            $app->render($page.'/'.$subpage.'/'.$file.'.php', $data);
-        }catch (\Exception $e){
-            $app->render('404.html');
-            //$app->render($page.'/'.$subpage.'/'.$file.'.php', $data);
-        }
-})->conditions(array('page' => '[a-z]{2,}', 'subpage' => '[a-z]{2,}', 'file' => '[a-z]{2,}'));
-
-
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-//                                        NIVEL 4                                                      //
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-
-
-// rota que leva a subModulos de um determinado pacote.
-$app->post('/:page/:subpage/pages/:file', $authentication, function ($page, $subpage, $file) use($app, $data) {
-    try{
-        $app->render($page.'/'.$subpage.'/pages/'.$file.'.php', $data);
-    }catch (\Exception $e){
-        $app->render('404.html');
-    }
-})->conditions(array('page' => '[a-z]{2,}', 'subpage' => '[a-z]{2,}', 'file' => '[a-z]{2,}'));
-/*---------------- end ------------------------*/
-
-
-// rota de nivel 3 levando um id para configuração interna
-$app->get('/:page/:subpage/:file/:id', $authentication, function ($page, $subpage, $file, $id) use($app, $data) {
-        try{
-            $data['id'] = $id;
-            $app->render($page.'/'.$subpage.'/'.$file.'.php', $data);
-        }catch (\Exception $e){
-            $app->render('404.html');
-        }
-})->conditions(array('page' => '[a-z]{2,}', 'subpage' => '[a-z]{2,}', 'file' => '[a-z]{2,}'));
-
-/*---------------- end ------------------------*/
-
-
-
-
-
-//&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*
-//*&*&*&*&*&*&*&*&   POST's  enviados por ajax  *&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
-//*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
-
-
-// users ajax -- user
-$app->post('/user/create', function() use($user){
-    echo $user->newUser($_POST);
-});
-
-
-$app->post('/user/edit', function() use ($user, $app){
-    $array = $user->selectUser($_POST['id']);
-    $array['id'] = $_POST['id'];
-    $array['cat'] = $user->selectAllCategory();
-
-    $app->render("admin/user/pages/edit.php", $array);
-});
-$app->post('/user/delete', function() use ($user, $app){
-    $app->render("admin/user/pages/delete.php", ['id' => $_POST['id']]);
-});
-
-$app->post('/user/delete/:id', function($id) use ($user, $app){
-    $user->deleteUser($id);
-});
-
-
-$app->post('/user/edit/:id', function($id) use ($user, $app){
-   // $user->updateUser($_POST, $id);
-});
-
-
-
-
-
-//&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*
-//*&*&*&*&*&*&*&*&   Serviços - requisisoes post  *&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
-//*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
-
-// retiorna dados do usuario dado o id
-$app->post('/user/:id', function($id) use($user){
-    echo json_encode($user->selectUser($id), JSON_FORCE_OBJECT);
-});
-
-
-
-// --- fim
 
 $app->run();

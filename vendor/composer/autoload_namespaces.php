@@ -6,5 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
+    'Pimple' => array($vendorDir . '/pimple/pimple/src'),
+    'Guzzle\\Stream' => array($vendorDir . '/guzzle/stream'),
+    'Guzzle\\Parser' => array($vendorDir . '/guzzle/parser'),
+    'Guzzle\\Http' => array($vendorDir . '/guzzle/http'),
+    'Guzzle\\Common' => array($vendorDir . '/guzzle/common'),
+    'Evenement' => array($vendorDir . '/evenement/evenement/src'),
+    '' => array($vendorDir . '/morris/lessql/src'),
 );

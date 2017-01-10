@@ -13,20 +13,20 @@ class File
 {
     /**
      * busca um arquivo atraves de uma nome de diretorio, de forma recursiva.
+     * 
+     * _path -> deve ser colocado para ele gerar os arquivos padroes
     **/
     public static function findFilesNamesByDir($dir){
+
         $path = array();
-        foreach(scandir(__dir__.'/../modules/site/'.$dir) as $k)
+
+        foreach(scandir(__dir__.'/../../'.$dir) as $k)
             if(($k != '.') && ($k != '..')) {
-                if($str = explode(' ', $k)){
-                    $c = implode('', $str);
 
-                    if(rename(__dir__.'/../modules/site/'.$dir.'/'.$k, __dir__.'/../modules/site/'.$dir.'/'.$c))
-                        $path[] = $dir.'/'.$c;
-                }else
-                    $path[] = $dir.'/'.$k;
-
-
+                if( strpos($k,'_') === 0)
+                    $path[] = __dir__.'/../../'.$dir."/".$k;
+                
+                
             }
 
 
@@ -36,10 +36,25 @@ class File
     /**
      * metodo de injeção de codigo, ou seja é um metodo que inclue
      *trechos de codigo em um arquivo
+     *
+     * @param String $file nome/diretorio do arquivo onde está, no caso começa da base_template que são todos os arquivos/pastas
+     * dentro de modules
+     *
+     **/
+    public static function inject($file){
+
+        include \sofia\kernel\path::dir().$file.".php";
+        
+    }
+
+    /**
+     * criando arquivos de log ou aquivo genericos
      **/
 
-    public static function inject($file){
-        //include "modules/".$file;
-        include \libs\kernel\path::dir().$file;
+    public static function newFile($name,  $text){
+        // Abre ou cria o arquivo bloco1.txt
+        $fp = fopen($name, "a");
+        $escreve = fwrite($fp, $text);
+        fclose($fp);
     }
 }

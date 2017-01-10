@@ -11,7 +11,7 @@
 namespace libs\util;
 
 
-class date{
+class Date{
 
     /**
      * disponibilização de valores do mes onde se diz o dia e ele retorna a
@@ -58,11 +58,19 @@ class date{
      *
      * basta dizer como a mascara deve ser onde "d" <- dia -- "m" <- mes "y" <- ano
      *
+     * para apresentar o valor reduzido da data só adicionar o 'R' exp: 'mR'
+     *
      * flag:: se o nameMounth for true ele devolve o mes como o nome dele.
     **/
     public static function dateTimeStampFragmentOrganize($str, $mask, $nameMounth=false){
-        $strs = explode(" ", $str);
-        $date = explode("-", $strs[0]);
+
+        if(is_array($str))
+            foreach ($str as $e)
+                $date[] = $e;
+        else {
+            $strs = explode(" ", $str);
+            $date = explode("-", $strs[0]);
+        }
 
 
         if(@$date[2] == "00" or $date[0] == "0000" or $str === NULL)
@@ -75,12 +83,22 @@ class date{
         foreach($m as $kk){
             if($kk == "d"){
                 $return[] = $date[2];
+
+            }else if($kk == "mR"){
+                //aplicando a flag
+                if($nameMounth)
+                    $return[] = substr(self::$MOUNTH[$date[1]],0, 3);
+                else
+                    $return[] = $date[1];
+
             }else if($kk == "m"){
                 //aplicando a flag
                 if($nameMounth)
                     $return[] = self::$MOUNTH[$date[1]];
                 else
                     $return[] = $date[1];
+            }else if($kk == "yR"){
+                $return[] = substr($date[0], 2);
             }else if($kk == "y"){
                 $return[] = $date[0];
             }

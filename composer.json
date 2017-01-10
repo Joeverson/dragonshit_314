@@ -1,6 +1,8 @@
 {
-  "require":
-  {
-    "phpoffice/phpexcel": "dev-develop"
-  }
+    "require": {
+        "slim/slim": "^3.0",
+        "slim/php-view": "^2.1",
+        "catfan/Medoo": "^1.1",
+        "cboden/ratchet": "^0.3.5"
+    }
 }

@@ -31,7 +31,7 @@ switch(json.type){
 	case "success":
 	    notification.ok(json.message);
 		setTimeout(function(){
-		    window.location.href = "<?=$site?>admin/dashboard";
+		    window.location.href = "<?= \libs\kernel\path::site()?>admin/dashboard";
         },3000);
 		break;
 }

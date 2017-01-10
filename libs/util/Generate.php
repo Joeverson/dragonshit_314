@@ -21,9 +21,9 @@ class Generate{
         if(!empty($_SESSION['makeMenu'])) return $_SESSION['makeMenu'];
         $masters = array();
 
-        foreach(scandir('modules/admin') as $k)
+        foreach(scandir('modules') as $k)
             if(($k != '.') && ($k != '..') && (!preg_match("/([.])/",$k))) {
-                $manifest = 'modules/admin/' . $k . '/manifest.json';
+                $manifest = 'modules/' . $k . '/manifest.json';
 
                 if (is_file($manifest)) {
                     $obj = json_decode(file_get_contents($manifest), true);
@@ -32,11 +32,10 @@ class Generate{
                         if (!empty($obj['acessLevel']) || $obj['acessLevel'] == "0"){
                             $array = explode(",", $obj['acessLevel']);
                             foreach($array as $vl){
-                                if($_SESSION["user"]["id_tipo"] == $vl){
+
                                     $masters[$obj['title']] = $obj;
                                     $masters[$obj['title']]['acessLevel'] = $array;
                                     continue;
-                                }
                             }
                         }else{
                             //$masters[$obj['title']] = $obj;
@@ -54,7 +53,7 @@ class Generate{
             }
         }
 
-        return $_SESSION["makeMenu"] = $masters;
-        //return $masters;
+        //return $_SESSION["makeMenu"] = $masters;
+        return $masters;
     }
 }
